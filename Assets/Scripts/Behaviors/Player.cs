@@ -6,7 +6,8 @@ namespace Game.Behaviors
 {
     public class Player : MonoBehaviour
     {
-        [SerializeField] private float speed = 5f;
+        [SerializeField] private float linearSpeed = 5f;
+        [SerializeField] private float angularSpeed = 90f;
         
         // The attached components
         private Rigidbody _rigidbody;
@@ -43,7 +44,7 @@ namespace Game.Behaviors
         // Setup
         private void Start()
         {
-            _movement = new Movement(speed);
+            _movement = new Movement(linearSpeed, angularSpeed);
         }
 
 #endregion

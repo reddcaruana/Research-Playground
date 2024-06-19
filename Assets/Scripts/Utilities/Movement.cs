@@ -7,16 +7,19 @@ namespace Game.Utilities
         /// <summary>
         /// The motion speed.
         /// </summary>
-        public float Speed { get; set; }
+        public float LinearSpeed { get; set; }
+        
+        public float AngularSpeed { get; set; }
 
         /// <summary>
         /// The motion direction.
         /// </summary>
         public Vector3 Direction { get; set; }
 
-        public Movement(float speed)
+        public Movement(float linearSpeed, float angularSpeed)
         {
-            Speed = speed;
+            LinearSpeed = linearSpeed;
+            AngularSpeed = angularSpeed;
         }
 
 #region Methods
@@ -27,12 +30,18 @@ namespace Game.Utilities
         /// <param name="rigidbody">The Rigidbody instance.</param>
         public void Move(Rigidbody rigidbody)
         {
-            rigidbody.linearVelocity = Direction * Speed;
+            // Set the velocity
+            var velocity = Direction * LinearSpeed;
+            velocity.y = rigidbody.linearVelocity.y;
+            rigidbody.linearVelocity = velocity;
 
+            // Rotate towards the direction of motion
             if (Mathf.Abs(Direction.x) > Mathf.Epsilon || Mathf.Abs(Direction.z) > Mathf.Epsilon)
             {
-                var lookRotation = Quaternion.LookRotation(Direction, Vector3.up);
-                rigidbody.MoveRotation(lookRotation);
+                var targetRotation = Quaternion.LookRotation(Direction, Vector3.up);
+                var sRotation = Quaternion.Slerp(rigidbody.rotation, targetRotation, Time.deltaTime * AngularSpeed);
+                
+                rigidbody.MoveRotation(sRotation);
             }
         }
 
