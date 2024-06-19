@@ -1,0 +1,5 @@
+{
+  "name": "Game.Map",
+  "rootNamespace": "Game",
+  "references":[ "GUID:9c2d2ea0ee5eb49a199a44404aa2663d" ]
+}
