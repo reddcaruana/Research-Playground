@@ -5,7 +5,7 @@ namespace Game.Map
     [RequireComponent(typeof(Grid))]
     public class MapManager : MonoSingleton<MapManager>
     {
-        [SerializeField] private GameObject previewDecal;
+        [SerializeField] private GameObject markerObject;
         
         /// <summary>
         /// The grid controlling all coordinates.
@@ -45,7 +45,7 @@ namespace Game.Map
         {
             // Find the cell position
             var cell = MainGrid.WorldToCell(message.GetPoint());
-            previewDecal.transform.position = MainGrid.GetCellCenterWorld(cell);
+            markerObject.transform.position = MainGrid.GetCellCenterWorld(cell);
         }
 
 #endregion
