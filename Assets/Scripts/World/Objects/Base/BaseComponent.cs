@@ -1,18 +1,18 @@
 using UnityEngine;
 
-namespace Game.Objects
+namespace Game.World
 {
     public abstract class BaseComponent : MonoBehaviour
     {
         /// <summary>
         /// The owner object.
         /// </summary>
-        public BaseBehavior Owner { get; private set; }
+        public BaseObject Owner { get; private set; }
 
         // Component caching
         protected virtual void Awake()
         {
-            Owner = GetComponentInParent<BaseBehavior>();
+            Owner = GetComponentInParent<BaseObject>();
             if (!Owner)
             {
                 Debug.LogWarning($"{name} could not find owner behavior.");
@@ -27,13 +27,4 @@ namespace Game.Objects
             Owner?.Remove(this);
         }
     }
-    
-    public abstract class BaseProperty : BaseComponent
-    { }
-    
-    public abstract class BaseState : BaseComponent
-    { }
-    
-    public abstract class BaseTrigger : BaseComponent
-    { }
 }

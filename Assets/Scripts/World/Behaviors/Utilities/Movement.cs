@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Utilities
+namespace Game.World
 {
     public class Movement
     {

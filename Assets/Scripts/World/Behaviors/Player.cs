@@ -1,19 +1,25 @@
 using Game.Input;
-using Game.Utilities;
 using UnityEngine;
 
-namespace Game.Behaviors
+namespace Game.World
 {
+    [RequireComponent(typeof(MarkerUpdater))]
     public class Player : MonoBehaviour
     {
+        [Header("Properties")]
         [SerializeField] private float linearSpeed = 5f;
         [SerializeField] private float angularSpeed = 90f;
+
+        [Header("References")]
+        [SerializeField] private Transform hand;
         
         // The attached components
         private Rigidbody _rigidbody;
+        private MarkerUpdater _updater;
         
         // Utility classes
         private Movement _movement;
+        private Interaction _interaction;
 
 #region Unity Events
 
@@ -21,6 +27,7 @@ namespace Game.Behaviors
         private void Awake()
         {
             _rigidbody = GetComponent<Rigidbody>();
+            _updater = GetComponent<MarkerUpdater>();
         }
 
         // Physics update
@@ -45,6 +52,8 @@ namespace Game.Behaviors
         private void Start()
         {
             _movement = new Movement(linearSpeed, angularSpeed);
+            
+            _interaction = new Interaction(hand);
         }
 
 #endregion
@@ -54,7 +63,7 @@ namespace Game.Behaviors
         /// <summary>
         /// Handles movement.
         /// </summary>
-        /// <param name="message">The message data.</param>
+        /// <param name="message">The move message data.</param>
         private void OnMove(PlayerControls.Move message)
         {
             _movement.Direction = message.Direction;

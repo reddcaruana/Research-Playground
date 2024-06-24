@@ -116,6 +116,8 @@ namespace Game.Input
             {
                 return;
             }
+            
+            Messenger.Current.Publish<Interact>();
         }
 
         /// <summary>
@@ -138,6 +140,9 @@ namespace Game.Input
         {
             public Vector3 Direction { get; set; }
         }
+
+        public struct Interact : IMessage
+        { }
 
 #endregion
     }

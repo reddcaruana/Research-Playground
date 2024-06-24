@@ -1,10 +1,10 @@
 using UnityEngine;
 
-namespace Game.Map
+namespace Game.World
 {
     public class MarkerUpdater : MonoBehaviour
     {
-        [SerializeField] private float distance = 1f;
+        [field: SerializeField] public float Distance { get; set; } = 1.25f;
 
 #region Unity Events
 
@@ -19,7 +19,7 @@ namespace Game.Map
             {
                 Source = transform.position,
                 Direction = transform.forward,
-                Distance = distance
+                Distance = Distance
             });
         }
 
@@ -27,7 +27,7 @@ namespace Game.Map
 
 #region Nested Types
 
-        public struct Move : IMessage
+        public struct Move : IMessage, ISource, IDirection
         {
             public Vector3 Direction { get; set; }
             public float Distance { get; set; }

@@ -1,5 +1,0 @@
-{
-  "name": "Game.Behaviors",
-  "rootNamespace": "Game",
-  "references":[ "GUID:f69d3d7fc07044e3b4cb30a0dbd588a3", "GUID:9c2d2ea0ee5eb49a199a44404aa2663d", "GUID:e66752a4546b49758abce244ddfbe686" ]
-}

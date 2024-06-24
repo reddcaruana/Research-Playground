@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Game.Objects
+namespace Game.World
 {
-    public abstract class BaseBehavior : MonoBehaviour
+    public abstract class BaseObject : MonoBehaviour
     {
         // The coroutines for each property
         private readonly Dictionary<System.Type, Coroutine> _coroutines = new();
