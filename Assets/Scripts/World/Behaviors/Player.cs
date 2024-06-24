@@ -39,20 +39,22 @@ namespace Game.World
         // Subscription handling
         private void OnDisable()
         {
+            // Messages
             Messenger.Current.Unsubscribe<PlayerControls.Move>(OnMove);
+            Messenger.Current.Unsubscribe<PlayerControls.Interact>(OnInteract);
         }
 
         // Subscription handling
         private void OnEnable()
         {
             Messenger.Current.Subscribe<PlayerControls.Move>(OnMove);
+            Messenger.Current.Subscribe<PlayerControls.Interact>(OnInteract);
         }
 
         // Setup
         private void Start()
         {
             _movement = new Movement(linearSpeed, angularSpeed);
-            
             _interaction = new Interaction(hand);
         }
 
@@ -67,6 +69,26 @@ namespace Game.World
         private void OnMove(PlayerControls.Move message)
         {
             _movement.Direction = message.Direction;
+        }
+
+        /// <summary>
+        /// Handles interaction.
+        /// </summary>
+        /// <param name="message">The interaction message data.</param>
+        private void OnInteract(PlayerControls.Interact message)
+        {
+            // Get the interaction result
+            var result = Messenger.Current.Query<Interaction.Query, Interaction.Result>(new Interaction.Query
+            {
+                Source = transform.position,
+                Distance = _updater.Distance,
+                Direction = transform.forward
+            });
+
+            if (result.Target is UsableProperty usable)
+            {
+                usable.Use();
+            }
         }
 
 #endregion

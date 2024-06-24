@@ -36,10 +36,19 @@ namespace Game.World
         /// <summary>
         /// Retrieves all instances of the specified component class.
         /// </summary>
-        public T[] Get<T>() where T : BaseComponent
+        public T[] GetAll<T>() where T : BaseComponent
         {
             var search = _components.Where(component => component is T).Cast<T>();
             return search.ToArray();
+        }
+
+        /// <summary>
+        /// Retrieves the first instance of the specified component class.
+        /// </summary>
+        public T Get<T>() where T : BaseComponent
+        {
+            var search = GetAll<T>();
+            return search.First();
         }
 
 #endregion
