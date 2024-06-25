@@ -1,0 +1,5 @@
+{
+  "name": "Game.Components",
+  "rootNamespace": "Game",
+  "references":[ "GUID:7ab32ab173a2449eacd4f8cf453a6f0f" ]
+}
