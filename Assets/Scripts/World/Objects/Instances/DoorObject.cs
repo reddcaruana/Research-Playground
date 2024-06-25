@@ -3,10 +3,8 @@ using UnityEngine;
 namespace Game.World
 {
     [RequireComponent(typeof(BooleanState))]
-    public class LeverObject : BaseObject
+    public class DoorObject : BaseObject
     {
-        [SerializeField] private Transform handleObject;
-        
         private void OnDisable()
         {
             var booleanState = Get<BooleanState>();
@@ -21,8 +19,7 @@ namespace Game.World
 
         public void OnBooleanStateChanged(bool value)
         {
-            var angle = value ? 45f : 0;
-            handleObject.rotation = Quaternion.Euler(angle, 0, 0);
+            gameObject.SetActive(!value);
         }
     }
 }

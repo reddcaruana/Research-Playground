@@ -13,6 +13,25 @@ namespace Game.World
         // The list of attached components
         private readonly HashSet<BaseComponent> _components = new();
 
+        /// <summary>
+        /// The object's database ID.
+        /// </summary>
+        public int ID { get; private set; }
+
+#region Unity Events
+
+        // Handles object registration
+        protected virtual void Start()
+        {
+            var result = Messenger.Current.Query<MapRecords.CreateQuery, MapRecords.CreateResult>(new MapRecords.CreateQuery
+            {
+                Instance = this
+            });
+            ID = result.ID;
+        }
+
+#endregion
+
 #region Component Methods
 
         /// <summary>
@@ -102,6 +121,19 @@ namespace Game.World
             _coroutines.Remove(type);
         }
         
+#endregion
+
+#region Database
+
+        /// <summary>
+        /// Sets the object's ID.
+        /// </summary>
+        /// <param name="newID">The new object ID.</param>
+        protected void SetID(int newID)
+        {
+            ID = newID;
+        }
+
 #endregion
     }
 }
