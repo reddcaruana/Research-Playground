@@ -17,7 +17,7 @@ namespace Game.Map
             
             Messenger.Current.Publish(new Move
             {
-                Source = transform.position,
+                Source = transform.position + transform.up,
                 Direction = transform.forward,
                 Distance = Distance
             });

@@ -93,7 +93,6 @@ namespace Game.Input
 
 #endregion
 
-
 #region Input Event Handling
 
         /// <summary>
@@ -105,6 +104,8 @@ namespace Game.Input
             {
                 return;
             }
+            
+            Messenger.Current.Publish<Attack>();
         }
 
         /// <summary>
@@ -142,6 +143,9 @@ namespace Game.Input
         }
 
         public struct Interact : IMessage
+        { }
+        
+        public struct Attack : IMessage
         { }
 
 #endregion

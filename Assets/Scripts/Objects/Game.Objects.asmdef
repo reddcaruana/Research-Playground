@@ -1,5 +1,5 @@
 {
   "name": "Game.Objects",
   "rootNamespace": "Game",
-  "references":[ "GUID:7ab32ab173a2449eacd4f8cf453a6f0f" ]
+  "references":[ "GUID:7ab32ab173a2449eacd4f8cf453a6f0f", "GUID:4e97b2f71248453eacbba714dadb7f2a", "GUID:9c2d2ea0ee5eb49a199a44404aa2663d", "GUID:2f8345d4aff24b598ba739166a4540b9" ]
 }

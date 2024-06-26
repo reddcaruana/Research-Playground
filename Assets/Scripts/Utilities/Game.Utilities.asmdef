@@ -1,4 +1,5 @@
 {
   "name": "Game.Utilities",
-  "rootNamespace": "Game"
+  "rootNamespace": "Game",
+  "references":[ "GUID:4e97b2f71248453eacbba714dadb7f2a" ]
 }

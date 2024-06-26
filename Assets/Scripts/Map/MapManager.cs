@@ -1,4 +1,5 @@
-using Game.Components;
+using Game.Objects;
+using Game.Queries;
 using UnityEngine;
 
 namespace Game.Map
@@ -54,30 +55,39 @@ namespace Game.Map
             var cell = MainGrid.WorldToCell(query.GetPoint());
             var center = MainGrid.GetCellCenterWorld(cell);
             
+            // Set up the position
+            var position = MainGrid.CellToWorld(cell);
+            (position.x, position.z) = (center.x, center.z);
+            
             // Set the box size
             var extents = (MainGrid.cellSize - Vector3.one * offset) * 0.5f;
             
             // Get the colliders
             var colliders = new Collider[16];
             var colliderCount = Physics.OverlapBoxNonAlloc(center, extents, colliders);
-
+            
+            // Prepare a result
+            var result = new MapData.CellResult
+            {
+                CellCenter = center,
+                CellPosition = position
+            };
+            
             // Get the first interactable object
             for (var i = 0; i < colliderCount; i++)
             {
-                if (colliders[i].TryGetComponent<BaseInteractable>(out var interactable))
+                // There is no data
+                if (!colliders[i].TryGetComponent<BaseObject>(out var target))
                 {
-                    return new MapData.CellResult
-                    {
-                        Target = interactable
-                    };
+                    continue;
                 }
+
+                result.Target = target;
+                return result;
             }
             
-            // Return null
-            return new MapData.CellResult
-            {
-                Target = null
-            };
+            // Return the basic information
+            return result;
         }
 
 #endregion
