@@ -5,6 +5,8 @@ namespace Game.Objects
 {
     public class Door : BaseObject
     {
+        [SerializeField] private GameObject model;
+        
         // Components
         private Collider _collider;
 
@@ -81,6 +83,7 @@ namespace Game.Objects
         /// <param name="value">The boolean value.</param>
         private void OpenHandler(bool value)
         {
+            model.SetActive(!value);
             _collider.isTrigger = value;
         }
 

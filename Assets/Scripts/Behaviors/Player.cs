@@ -122,7 +122,10 @@ namespace Game.Behaviors
             
             // Handle interactions
             var interactable = baseObject.GetInteractable();
-            interactable.Interact();
+            if (interactable != null)
+            {
+                interactable.Interact();
+            }
             
             // Handle pickups
             var pickable = baseObject.Get<Pickable>();
