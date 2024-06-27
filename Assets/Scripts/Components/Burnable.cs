@@ -5,12 +5,15 @@ namespace Game.Components
 {
     public class Burnable : MonoBehaviour
     {
-        [SerializeField] private float maxHealth = 100f;
+        private static readonly int BurnValueProperty = Shader.PropertyToID("_Burn_Value");
+        
+        [SerializeField] private float maxDurability = 100f;
+        [SerializeField] private float burnThreshold = 0.1f;
 
         /// <summary>
         /// The current health value.
         /// </summary>
-        public float CurrentHealth { get; private set; }
+        public float Durability { get; private set; }
         
         /// <summary>
         /// The burning state.
@@ -19,12 +22,30 @@ namespace Game.Components
         
         // Coroutine references
         private Coroutine _activeCoroutine;
+        
+        // Materials
+        private Material[] _materials;
+        private BoxCollider _fireCollider;
+        private FireSource _fireSource;
 
 #region Unity Events
 
+        // Component caching
+        private void Awake()
+        {
+            var renderers = GetComponentsInChildren<Renderer>();
+            
+            _materials = new Material[renderers.Length];
+            for (var i = 0; i < renderers.Length; i++)
+            {
+                _materials[i] = renderers[i].material;
+            }
+        }
+
+        // Variable setup
         private void Start()
         {
-            CurrentHealth = maxHealth;
+            Durability = maxDurability;
         }
 
 #endregion
@@ -51,6 +72,50 @@ namespace Game.Components
             _activeCoroutine = StartCoroutine(BurnCoroutine());
         }
 
+        /// <summary>
+        /// Adds the fire source components.
+        /// </summary>
+        private void CreateFireSource()
+        {
+            // Add the script
+            _fireSource = gameObject.AddComponent<FireSource>();
+
+            // Create the collider
+            var activeCollider = GetComponent<BoxCollider>();
+            _fireCollider = gameObject.AddComponent<BoxCollider>();
+            _fireCollider.isTrigger = true;
+            _fireCollider.center = activeCollider.center;
+            _fireCollider.size = activeCollider.size * 2f;
+        }
+
+        /// <summary>
+        /// Removes the fire source components.
+        /// </summary>
+        private void RemoveFireSource()
+        {
+            Destroy(_fireSource);
+            Destroy(_fireCollider);
+        }
+
+        /// <summary>
+        /// Updates the material values.
+        /// </summary>
+        private void UpdateMaterials()
+        {
+            var durabilityT = Durability / maxDurability;
+            var t = 0f;
+            
+            if (durabilityT <= burnThreshold)
+            {
+                t = 1 - durabilityT / burnThreshold;
+            }
+            
+            for (var i = 0; i < _materials.Length; i++)
+            {
+                _materials[i].SetFloat(BurnValueProperty, t);
+            }
+        }
+
 #endregion
 
 #region Coroutines
@@ -61,18 +126,23 @@ namespace Game.Components
         private IEnumerator BurnCoroutine()
         {
             IsBurning = true;
+            CreateFireSource();
             
             while (IsBurning)
             {
-                CurrentHealth -= Time.deltaTime;
-                if (CurrentHealth <= 0)
+                Durability -= Time.deltaTime;
+                UpdateMaterials();
+                
+                if (Durability <= 0)
                 {
-                    Debug.Log("Burned");
+                    RemoveFireSource();
                     yield break;
                 }
-            }
 
-            yield return null;
+                yield return null;
+            }
+            
+            RemoveFireSource();
         }
 
 #endregion

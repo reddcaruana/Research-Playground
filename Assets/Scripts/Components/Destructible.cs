@@ -8,7 +8,7 @@ namespace Game.Components
         /// <summary>
         /// The object's health.
         /// </summary>
-        [field: SerializeField] public int Health { get; private set; }
+        [field: SerializeField] public int Integrity { get; private set; }
 
         /// <summary>
         /// Handles changes in health with history.
@@ -23,14 +23,14 @@ namespace Game.Components
         /// <inheritdoc />
         public void Damage(int value)
         {
-            var oldHealth = Health;
-            Health -= value;
+            var oldHealth = Integrity;
+            Integrity -= value;
             
             // Invoke the change event
-            OnHealthChanged?.Invoke(Health, oldHealth);
+            OnHealthChanged?.Invoke(Integrity, oldHealth);
             
             // Invoke the depleted event if we're at zero
-            if (Health <= 0)
+            if (Integrity <= 0)
             {
                 OnDepleted?.Invoke();
             }
