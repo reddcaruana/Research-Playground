@@ -1,3 +1,4 @@
+using Game.Interfaces;
 using UnityEngine;
 
 namespace Game.Queries
@@ -31,7 +32,7 @@ namespace Game.Queries
 
 #region Messages
 
-        public struct RegisterContents<T> : IMessage
+        public struct RegisterContents : IMessage
         {
             /// <summary>
             /// The object's world position.
@@ -41,11 +42,10 @@ namespace Game.Queries
             /// <summary>
             /// The object instanced.
             /// </summary>
-            public T Contents { get; set; }
+            public IObject Contents { get; set; }
         }
 
-        public struct GetCellContentsResult<T> : IMessage
-            where T : MonoBehaviour
+        public struct GetCellContentsResult : IMessage
         {
             /// <summary>
             /// The Cell value.
@@ -60,7 +60,7 @@ namespace Game.Queries
             /// <summary>
             /// The cell contents.
             /// </summary>
-            public T Contents { get; set; }
+            public IObject Contents { get; set; }
         }
 
 #endregion

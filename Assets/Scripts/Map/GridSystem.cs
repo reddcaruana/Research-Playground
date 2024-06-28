@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using Game.Objects;
+using Game.Components;
+using Game.Interfaces;
 using Game.Queries;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace Game.Map
         // The contents of this grid
         // NOTE: If a BaseObject is stackable, the child information will be
         //       stored inside an attached component
-        private readonly Dictionary<(int x, int z), BaseObject> gridContents = new();
+        private readonly Dictionary<(int x, int z), IObject> gridContents = new();
 
         /// <summary>
         /// The grid on which all calculations are made.
@@ -30,14 +31,14 @@ namespace Game.Map
         private void OnDisable()
         {
             // Grid Queries
-            Messenger.Current.Unsubscribe<GridQueries.RegisterContents<BaseObject>>(RegisterContents);
+            Messenger.Current.Unsubscribe<GridQueries.RegisterContents>(RegisterContents);
         }
         
         // Event Coupling
         private void OnEnable()
         {
             // Grid Queries
-            Messenger.Current.Subscribe<GridQueries.RegisterContents<BaseObject>>(RegisterContents);
+            Messenger.Current.Subscribe<GridQueries.RegisterContents>(RegisterContents);
         }
 
 #endregion
@@ -48,14 +49,14 @@ namespace Game.Map
         /// Queries a cell and returns its contents.
         /// </summary>
         /// <param name="query">The query parameters.</param>
-        private GridQueries.GetCellContentsResult<BaseObject> GetCellContents(GridQueries.GetCellContentsQuery query)
+        private GridQueries.GetCellContentsResult GetCellContents(GridQueries.GetCellContentsQuery query)
         {
             // Prepare the coordinates
             var cell = MainGrid.WorldToCell(query.GetPoint());
             var position = MainGrid.CellToWorld(cell);
             
             // Generate the basic data
-            var result = new GridQueries.GetCellContentsResult<BaseObject>
+            var result = new GridQueries.GetCellContentsResult
             {
                 Cell = cell,
                 Position = position
@@ -83,26 +84,35 @@ namespace Game.Map
         /// Registers contents to a cell.
         /// </summary>
         /// <param name="message">The registration parameters.</param>
-        private void RegisterContents(GridQueries.RegisterContents<BaseObject> message)
+        private void RegisterContents(GridQueries.RegisterContents message)
         {
             // Prepare the key information
             var cell = MainGrid.WorldToCell(message.Position);
             var key = (cell.x, cell.z);
             
             // There is already a key here
-            if (gridContents.ContainsKey(key))
+            if (gridContents.TryGetValue(key, out var contents))
             {
-                throw new System.Exception($"Object already exists on cell ({key.x}, {key.z}).");
+                // Check if the object can be stacked
+                var stackable = contents.Get<Stackable>();
+                if (!stackable)
+                {
+                   throw new System.Exception($"Object already exists on cell ({key.x}, {key.z}).");
+                }
+                
+                // Stacking was unsuccessful
+                if (!stackable.Stack(message.Contents))
+                {
+                    throw new System.Exception(
+                        $"Object already exists and cannot be stacked further on cell ({key.x}, {key.z}).");
+                }
+
+                // Object was stacked
+                return;
             }
 
             // Register the cell contents
-            Debug.Log("Cell contents registered");
             gridContents[key] = message.Contents;
-
-            foreach (var kvp in gridContents)
-            {
-                Debug.Log($"[{kvp.Key.x}, {kvp.Key.z}] {kvp.Value.name}");
-            }
         }
 
 #endregion

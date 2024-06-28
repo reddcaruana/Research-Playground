@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Game.Components;
+using Game.Interfaces;
 using Game.Queries;
 using UnityEngine;
 
 namespace Game.Objects
 {
-    public abstract class BaseObject : MonoBehaviour
+    public abstract class BaseObject : MonoBehaviour, IObject
     {
         // The definition of attached properties
         private readonly Dictionary<System.Type, IObjectComponent> components = new();
@@ -20,7 +21,7 @@ namespace Game.Objects
         // Object setup
         protected virtual void Start()
         {
-            Messenger.Current.Publish(new GridQueries.RegisterContents<BaseObject>
+            Messenger.Current.Publish(new GridQueries.RegisterContents
             {
                 Position = transform.position,
                 Contents = this
@@ -30,7 +31,7 @@ namespace Game.Objects
         /// <summary>
         /// Returns a component of a specified type.
         /// </summary>
-        public T Get<T>() where T : IObjectComponent
+        public T Get<T>() where T : IComponent
         {
             var type = typeof(T);
             
