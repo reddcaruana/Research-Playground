@@ -75,22 +75,22 @@ namespace Game.Behaviors
         /// <param name="message">The attack message data.</param>
         private void OnAttack(PlayerControls.Attack message)
         {
-            var result = Messenger.Current.Query<MapData.CellQuery, MapData.CellResult>(new MapData.CellQuery
-            {
-                Source = transform.position,
-                Distance = _updater.Distance,
-                Direction = transform.forward
-            });
-            
-            // There is no object
-            if (!result.Target || result.Target is not BaseObject baseObject)
-            {
-                return;
-            }
-            
-            // Handle damage
-            var destructible = baseObject.Get<Destructible>();
-            destructible?.Damage(1);
+            // var result = Messenger.Current.Query<MapQueries.CellQuery, MapQueries.CellResult>(new MapQueries.CellQuery
+            // {
+            //     Source = transform.position,
+            //     Distance = _updater.Distance,
+            //     Direction = transform.forward
+            // });
+            //
+            // // There is no object
+            // if (!result.Target || result.Target is not BaseObject baseObject)
+            // {
+            //     return;
+            // }
+            //
+            // // Handle damage
+            // var destructible = baseObject.Get<Destructible>();
+            // destructible?.Damage(1);
         }
         
         /// <summary>
@@ -107,32 +107,32 @@ namespace Game.Behaviors
             }
             
             // Get the interaction result
-            var result = Messenger.Current.Query<MapData.CellQuery, MapData.CellResult>(new MapData.CellQuery
-            {
-                Source = transform.position,
-                Distance = _updater.Distance,
-                Direction = transform.forward
-            });
-            
-            // There is no usable object
-            if (!result.Target || result.Target is not BaseObject baseObject)
-            {
-                return;
-            }
-            
-            // Handle interactions
-            var interactable = baseObject.GetInteractable();
-            if (interactable != null)
-            {
-                interactable.Interact();
-            }
-            
-            // Handle pickups
-            var pickable = baseObject.Get<Pickable>();
-            if (pickable != null)
-            {
-                _interaction.Hold(pickable);
-            }
+            // var result = Messenger.Current.Query<MapQueries.CellQuery, MapQueries.CellResult>(new MapQueries.CellQuery
+            // {
+            //     Source = transform.position,
+            //     Distance = _updater.Distance,
+            //     Direction = transform.forward
+            // });
+            //
+            // // There is no usable object
+            // if (!result.Target || result.Target is not BaseObject baseObject)
+            // {
+            //     return;
+            // }
+            //
+            // // Handle interactions
+            // var interactable = baseObject.GetInteractable();
+            // if (interactable != null)
+            // {
+            //     interactable.Interact();
+            // }
+            //
+            // // Handle pickups
+            // var pickable = baseObject.Get<Pickable>();
+            // if (pickable != null)
+            // {
+            //     _interaction.Hold(pickable);
+            // }
         }
 
         /// <summary>

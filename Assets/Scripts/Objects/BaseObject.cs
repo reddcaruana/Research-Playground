@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Game.Components;
+using Game.Queries;
 using UnityEngine;
 
 namespace Game.Objects
@@ -8,12 +9,22 @@ namespace Game.Objects
     public abstract class BaseObject : MonoBehaviour
     {
         // The definition of attached properties
-        private readonly Dictionary<System.Type, IObjectComponent> _components = new();
+        private readonly Dictionary<System.Type, IObjectComponent> components = new();
 
         // Component caching
         protected virtual void Awake()
         {
             RegisterComponents();
+        }
+
+        // Object setup
+        protected virtual void Start()
+        {
+            Messenger.Current.Publish(new GridQueries.RegisterContents<BaseObject>
+            {
+                Position = transform.position,
+                Contents = this
+            });
         }
 
         /// <summary>
@@ -24,7 +35,7 @@ namespace Game.Objects
             var type = typeof(T);
             
             // There is no component to return
-            if (!_components.TryGetValue(type, out var component))
+            if (!components.TryGetValue(type, out var component))
             {
                 return default;
             }
@@ -38,7 +49,7 @@ namespace Game.Objects
         /// </summary>
         public IInteractable GetInteractable()
         {
-            var values = _components.Values.ToArray();
+            var values = components.Values.ToArray();
             for (var i = 0; i < values.Length; i++)
             {
                 var value = values[i];
@@ -61,7 +72,7 @@ namespace Game.Objects
             foreach (var component in components)
             {
                 var type = component.GetType();
-                _components[type] = component;
+                this.components[type] = component;
             }
         }
     }

@@ -48,13 +48,13 @@ namespace Game.Objects
                 return;
             }
 
-            var result = Messenger.Current.Query<MapData.CellQuery, MapData.CellResult>(new MapData.CellQuery
-            {
-                Source = transform.position,
-            });
-            
-            transform.position = result.CellPosition;
-            transform.rotation = Quaternion.identity;
+            // var result = Messenger.Current.Query<MapQueries.CellQuery, MapQueries.CellResult>(new MapQueries.CellQuery
+            // {
+            //     Source = transform.position,
+            // });
+            //
+            // transform.position = result.CellPosition;
+            // transform.rotation = Quaternion.identity;
         }
 
 #endregion

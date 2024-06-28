@@ -1,3 +1,4 @@
+using Game.Queries;
 using UnityEngine;
 
 namespace Game.Map
@@ -14,29 +15,13 @@ namespace Game.Map
             {
                 return;
             }
-            
-            Messenger.Current.Publish(new Move
+
+            Messenger.Current.Publish(new MarkerQueries.Place
             {
-                Source = transform.position + transform.up,
+                Source = transform.position,
                 Direction = transform.forward,
                 Distance = Distance
             });
-        }
-
-#endregion
-
-#region Nested Types
-
-        public struct Move : IMessage, ISource, IDirection
-        {
-            public Vector3 Direction { get; set; }
-            public float Distance { get; set; }
-            public Vector3 Source { get; set; }
-
-            public Vector3 GetPoint()
-            {
-                return Source + Direction * Distance;
-            }
         }
 
 #endregion
