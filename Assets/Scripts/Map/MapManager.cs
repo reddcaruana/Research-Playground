@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Objects;
 using Game.Queries;
 using UnityEngine;
@@ -8,6 +9,9 @@ namespace Game.Map
     public class MapManager : MonoSingleton<MapManager>
     {
         [SerializeField] private GameObject markerObject;
+        
+        // The grid contents
+        private readonly Dictionary<(int x, int z), List<BaseObject>> _gridContents = new();
         
         /// <summary>
         /// The grid controlling all coordinates.
@@ -26,68 +30,61 @@ namespace Game.Map
         // Unsubscribes from the event listeners
         private void OnDisable()
         {
-            // Messages
-            Messenger.Current.Unsubscribe<MarkerUpdater.Move>(MoveMarker);
+            // Marker
+            Messenger.Current.Unsubscribe<MarkerQueries.Place>(PlaceMarker);
             
-            // Queries
-            Messenger.Current.Unsubscribe<MapData.CellQuery, MapData.CellResult>(QueryCell);
+            // Contents
+            Messenger.Current.Unsubscribe<MapQueries.AddContents<BaseObject>>(AddContents);
         }
 
         // Subscribes to the event listeners
         private void OnEnable()
         {
-            // Messages
-            Messenger.Current.Subscribe<MarkerUpdater.Move>(MoveMarker);
+            // Marker
+            Messenger.Current.Subscribe<MarkerQueries.Place>(PlaceMarker);
             
-            // Queries
-            Messenger.Current.Subscribe<MapData.CellQuery, MapData.CellResult>(QueryCell);
+            // Contents
+            Messenger.Current.Subscribe<MapQueries.AddContents<BaseObject>>(AddContents);
+        }
+
+#endregion
+
+#region Methods
+
+        /// <summary>
+        /// Converts a position into a cell position tuple.
+        /// </summary>
+        /// <param name="position">The world position.</param>
+        private (int x, int z) GetCell(Vector3 position)
+        {
+            var cell = MainGrid.WorldToCell(position);
+            return (cell.x, cell.z);
         }
 
 #endregion
 
 #region Queries
-
-        private MapData.CellResult QueryCell(MapData.CellQuery query)
+        
+        /// <summary>
+        /// Returns the contents of a cell.
+        /// </summary>
+        /// <param name="query">The query data.</param>
+        /// <returns></returns>
+        private MapQueries.CellContents<BaseObject> GetCellContents(MapQueries.GetCellContents query)
         {
-            const float offset = 0.05f;
+            // Prepare the data
+            var data = new MapQueries.CellContents<BaseObject>();
+            var cell = GetCell(query.GetPoint());
             
-            // Get the center of the cell
-            var cell = MainGrid.WorldToCell(query.GetPoint());
-            var center = MainGrid.GetCellCenterWorld(cell);
-            
-            // Set up the position
-            var position = MainGrid.CellToWorld(cell);
-            (position.x, position.z) = (center.x, center.z);
-            
-            // Set the box size
-            var extents = (MainGrid.cellSize - Vector3.one * offset) * 0.5f;
-            
-            // Get the colliders
-            var colliders = new Collider[16];
-            var colliderCount = Physics.OverlapBoxNonAlloc(center, extents, colliders);
-            
-            // Prepare a result
-            var result = new MapData.CellResult
+            // There is no information
+            if (!_gridContents.TryGetValue(cell, out var contents))
             {
-                CellCenter = center,
-                CellPosition = position
-            };
-            
-            // Get the first interactable object
-            for (var i = 0; i < colliderCount; i++)
-            {
-                // There is no data
-                if (!colliders[i].TryGetComponent<BaseObject>(out var target))
-                {
-                    continue;
-                }
-
-                result.Target = target;
-                return result;
+                return data;
             }
-            
-            // Return the basic information
-            return result;
+
+            // Set the contents
+            data.Contents = contents;
+            return data;
         }
 
 #endregion
@@ -95,10 +92,29 @@ namespace Game.Map
 #region Messages
 
         /// <summary>
-        /// Moves the map marker.
+        /// Adds contents to a cell.
+        /// </summary>
+        /// <param name="message">The message value.</param>
+        private void AddContents(MapQueries.AddContents<BaseObject> message)
+        {
+            // Find the Map Coordinate
+            var cell = GetCell(message.Position);
+
+            // No grid contents
+            if (!_gridContents.ContainsKey(cell))
+            {
+                _gridContents[cell] = new List<BaseObject>();
+            }
+            
+            // Add the instance
+            _gridContents[cell].Add(message.Instance);
+        }
+        
+        /// <summary>
+        /// Places the map marker over a cell.
         /// </summary>
         /// <param name="message">The message.</param>
-        private void MoveMarker(MarkerUpdater.Move message)
+        private void PlaceMarker(MarkerQueries.Place message)
         {
             // Find the cell position
             var cell = MainGrid.WorldToCell(message.GetPoint());
