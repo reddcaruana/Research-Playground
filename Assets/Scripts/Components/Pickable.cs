@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Components
 {
-    public class Pickable : MonoBehaviour, IPickable
+    public class Pickable : MonoBehaviour
     {
         /// <summary>
         /// Handles the change in state.

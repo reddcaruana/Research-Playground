@@ -971,7 +971,6 @@ GameObject:
   - component: {fileID: 573853284}
   - component: {fileID: 573853285}
   - component: {fileID: 573853286}
-  - component: {fileID: 573853287}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1038,19 +1037,6 @@ MonoBehaviour:
   linearSpeed: 5
   angularSpeed: 15
   hand: {fileID: 1481061251}
---- !u!114 &573853287
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 573853283}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e60e348087654311bb4c355be343e0c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  <Distance>k__BackingField: 1.25
 --- !u!1 &630759962
 GameObject:
   m_ObjectHideFlags: 0
@@ -2207,7 +2193,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93ca4b84066c44faaa1c70adefaf0e60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model: {fileID: 323453007}
 --- !u!114 &2074612533
 MonoBehaviour:
   m_ObjectHideFlags: 0

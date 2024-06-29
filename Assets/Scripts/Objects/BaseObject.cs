@@ -8,14 +8,47 @@ namespace Game.Objects
     public abstract class BaseObject : MonoBehaviour
     {
         // The definition of attached properties
+<<<<<<< Updated upstream
         private readonly Dictionary<System.Type, IObjectComponent> _components = new();
+=======
+        private readonly Dictionary<System.Type, IComponent> components = new();
+>>>>>>> Stashed changes
 
+#region Unity Events
+        
         // Component caching
         protected virtual void Awake()
         {
             RegisterComponents();
         }
 
+<<<<<<< Updated upstream
+=======
+        // Object setup
+        protected virtual void Start()
+        {
+            Messenger.Current.Publish(new GridQueries.RegisterContents
+            {
+                Position = transform.position,
+                Contents = this
+            });
+        }
+
+        // Object removal
+        protected virtual void OnDestroy()
+        {
+            Messenger.Current.Publish(new GridQueries.UnregisterContents
+            {
+                Position = transform.position,
+                Contents = this
+            });
+        }
+
+#endregion
+
+#region Methods
+        
+>>>>>>> Stashed changes
         /// <summary>
         /// Returns a component of a specified type.
         /// </summary>
@@ -34,6 +67,7 @@ namespace Game.Objects
         }
 
         /// <summary>
+<<<<<<< Updated upstream
         /// Returns the first interactable in the known collection.
         /// </summary>
         public IInteractable GetInteractable()
@@ -52,17 +86,32 @@ namespace Game.Objects
         }
 
         /// <summary>
+=======
+>>>>>>> Stashed changes
         /// Registers the object's components.
         /// </summary>
         private void RegisterComponents()
         {
-            var components = GetComponents<IObjectComponent>();
+            var attached = GetComponents<IComponent>();
 
-            foreach (var component in components)
+            foreach (var component in attached)
             {
                 var type = component.GetType();
+<<<<<<< Updated upstream
                 _components[type] = component;
+=======
+                components[type] = component;
+>>>>>>> Stashed changes
             }
         }
+
+        /// <inheritdoc />
+        public bool TryGet<T>(out T instance) where T : IComponent
+        {
+            instance = Get<T>();
+            return instance != null;
+        }
+
+#endregion
     }
 }

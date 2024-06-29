@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Components
 {
-    public class Trigger : MonoBehaviour, IInteractable
+    public class Trigger : MonoBehaviour
     {
         /// <summary>
         /// The state of this switch.
@@ -23,7 +23,7 @@ namespace Game.Components
         // Registers object links
         private void OnEnable()
         {
-            Target?.SetController(this);
+            // Target?.SetController(this);
         }
 
         /// <inheritdoc />
@@ -31,7 +31,7 @@ namespace Game.Components
         {
             // Switch the state
             State = !State;
-            Target.Interact(this);
+            // Target.Interact(this);
             
             // Emit the value
             OnChange?.Invoke(State);

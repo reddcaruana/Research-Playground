@@ -5,6 +5,7 @@ namespace Game.Objects
 {
     public class Door : BaseObject
     {
+<<<<<<< Updated upstream
         [SerializeField] private GameObject model;
         
         // Components
@@ -55,9 +56,15 @@ namespace Game.Objects
                 destructible.OnDepleted += DestroyedHandler;
             }
         }
+=======
+        [Header("References")]
+        [SerializeField] private GameObject doorObject;
+>>>>>>> Stashed changes
 
-#region Action Handling
+        // Components
+        private Destructible destructible;
 
+<<<<<<< Updated upstream
         /// <summary>
         /// Handles the damaged event.
         /// </summary>
@@ -73,11 +80,36 @@ namespace Game.Objects
         /// Handles the Destroyed event.
         /// </summary>
         private void DestroyedHandler()
+=======
+#region Unity Events
+
+        /// <inheritdoc />
+        protected override void Start()
+        {
+            base.Start();
+
+            if (TryGet(out destructible))
+            {
+                destructible.OnIntegrityChanged += OnDestructibleIntegrityChanged;
+                destructible.OnBroken += OnDestructibleBroken;
+            }
+        }
+
+#endregion
+
+#region Destructible Events
+
+        /// <summary>
+        /// The destructible has been broken.
+        /// </summary>
+        private void OnDestructibleBroken()
+>>>>>>> Stashed changes
         {
             Destroy(gameObject);
         }
         
         /// <summary>
+<<<<<<< Updated upstream
         /// Handles the Open event.
         /// </summary>
         /// <param name="value">The boolean value.</param>
@@ -85,6 +117,16 @@ namespace Game.Objects
         {
             model.SetActive(!value);
             _collider.isTrigger = value;
+=======
+        /// The destructible integrity was changed.
+        /// </summary>
+        /// <param name="current"></param>
+        /// <param name="previous"></param>
+        private void OnDestructibleIntegrityChanged(int current, int previous)
+        {
+            var damage = previous - current;
+            Debug.Log($"{name} integrity took {damage} damage. (Currently {current}).");
+>>>>>>> Stashed changes
         }
 
 #endregion

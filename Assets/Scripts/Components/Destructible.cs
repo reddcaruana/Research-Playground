@@ -1,3 +1,4 @@
+using Game.Interfaces;
 using Unity.Plastic.Newtonsoft.Json.Serialization;
 using UnityEngine;
 
@@ -5,34 +6,32 @@ namespace Game.Components
 {
     public class Destructible : MonoBehaviour, IDestructible
     {
-        /// <summary>
-        /// The object's health.
-        /// </summary>
+        /// <inheritdoc />
         [field: SerializeField] public int Integrity { get; private set; }
 
         /// <summary>
         /// Handles changes in health with history.
         /// </summary>
-        public event Action<int, int> OnHealthChanged;
+        public event Action<int, int> OnIntegrityChanged;
 
         /// <summary>
         /// Handles the destruction state.
         /// </summary>
-        public event Action OnDepleted;
-        
+        public event Action OnBroken;
+
         /// <inheritdoc />
         public void Damage(int value)
         {
-            var oldHealth = Integrity;
+            var oldIntegrity = Integrity;
             Integrity -= value;
             
             // Invoke the change event
-            OnHealthChanged?.Invoke(Integrity, oldHealth);
+            OnIntegrityChanged?.Invoke(Integrity, oldIntegrity);
             
             // Invoke the depleted event if we're at zero
             if (Integrity <= 0)
             {
-                OnDepleted?.Invoke();
+                OnBroken?.Invoke();
             }
         }
     }
