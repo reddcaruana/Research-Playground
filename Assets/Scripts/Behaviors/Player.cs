@@ -74,17 +74,6 @@ namespace Game.Behaviors
         /// <param name="message">The attack message data.</param>
         private void OnAttack(PlayerControls.Attack message)
         {
-<<<<<<< Updated upstream
-            var result = Messenger.Current.Query<MapData.CellQuery, MapData.CellResult>(new MapData.CellQuery
-            {
-                Source = transform.position,
-                Distance = _updater.Distance,
-                Direction = transform.forward
-            });
-            
-            // There is no object
-            if (!result.Target || result.Target is not BaseObject baseObject)
-=======
             // Get the cell contents
             var result = Messenger.Current.Query<GridQueries.GetCellContentsQuery, GridQueries.GetCellContentsResult>(
                 new GridQueries.GetCellContentsQuery
@@ -96,22 +85,15 @@ namespace Game.Behaviors
 
             // There is no object
             if (result.Contents is not BaseObject baseObject)
->>>>>>> Stashed changes
             {
                 return;
             }
             
-<<<<<<< Updated upstream
-            // Handle damage
-            var destructible = baseObject.Get<Destructible>();
-            destructible?.Damage(1);
-=======
             // If the object should take damage, apply it.
             if (baseObject.TryGet<Destructible>(out var destructible))
             {
                 destructible.Damage(1);
             }
->>>>>>> Stashed changes
         }
         
         /// <summary>
@@ -120,44 +102,7 @@ namespace Game.Behaviors
         /// <param name="message">The interaction message data.</param>
         private void OnInteract(PlayerControls.Interact message)
         {
-<<<<<<< Updated upstream
-            // We're already holding something
-            if (_interaction.IsFull)
-            {
-                _interaction.Drop();
-                return;
-            }
-            
-            // Get the interaction result
-            var result = Messenger.Current.Query<MapData.CellQuery, MapData.CellResult>(new MapData.CellQuery
-            {
-                Source = transform.position,
-                Distance = _updater.Distance,
-                Direction = transform.forward
-            });
-            
-            // There is no usable object
-            if (!result.Target || result.Target is not BaseObject baseObject)
-            {
-                return;
-            }
-            
-            // Handle interactions
-            var interactable = baseObject.GetInteractable();
-            if (interactable != null)
-            {
-                interactable.Interact();
-            }
-            
-            // Handle pickups
-            var pickable = baseObject.Get<Pickable>();
-            if (pickable != null)
-            {
-                _interaction.Hold(pickable);
-            }
-=======
 
->>>>>>> Stashed changes
         }
 
         /// <summary>

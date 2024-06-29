@@ -2238,6 +2238,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93ca4b84066c44faaa1c70adefaf0e60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  doorObject: {fileID: 0}
 --- !u!114 &2074612533
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2325,6 +2326,7 @@ SceneRoots:
   - {fileID: 330585546}
   - {fileID: 410087041}
   - {fileID: 832575519}
+  - {fileID: 573853284}
   - {fileID: 245709724}
   - {fileID: 1486891218}
   - {fileID: 1840553775}
@@ -2332,4 +2334,3 @@ SceneRoots:
   - {fileID: 1805999687}
   - {fileID: 630759963}
   - {fileID: 974422961}
-  - {fileID: 573853284}

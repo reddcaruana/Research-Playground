@@ -1,18 +1,14 @@
 using System.Collections.Generic;
-using System.Linq;
-using Game.Components;
+using Game.Interfaces;
+using Game.Queries;
 using UnityEngine;
 
 namespace Game.Objects
 {
-    public abstract class BaseObject : MonoBehaviour
+    public abstract class BaseObject : MonoBehaviour, IObject
     {
         // The definition of attached properties
-<<<<<<< Updated upstream
-        private readonly Dictionary<System.Type, IObjectComponent> _components = new();
-=======
         private readonly Dictionary<System.Type, IComponent> components = new();
->>>>>>> Stashed changes
 
 #region Unity Events
         
@@ -22,8 +18,6 @@ namespace Game.Objects
             RegisterComponents();
         }
 
-<<<<<<< Updated upstream
-=======
         // Object setup
         protected virtual void Start()
         {
@@ -48,16 +42,15 @@ namespace Game.Objects
 
 #region Methods
         
->>>>>>> Stashed changes
         /// <summary>
         /// Returns a component of a specified type.
         /// </summary>
-        public T Get<T>() where T : IObjectComponent
+        public T Get<T>() where T : IComponent
         {
             var type = typeof(T);
             
             // There is no component to return
-            if (!_components.TryGetValue(type, out var component))
+            if (!components.TryGetValue(type, out var component))
             {
                 return default;
             }
@@ -67,27 +60,6 @@ namespace Game.Objects
         }
 
         /// <summary>
-<<<<<<< Updated upstream
-        /// Returns the first interactable in the known collection.
-        /// </summary>
-        public IInteractable GetInteractable()
-        {
-            var values = _components.Values.ToArray();
-            for (var i = 0; i < values.Length; i++)
-            {
-                var value = values[i];
-                if (value is IInteractable interactable)
-                {
-                    return interactable;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-=======
->>>>>>> Stashed changes
         /// Registers the object's components.
         /// </summary>
         private void RegisterComponents()
@@ -97,11 +69,7 @@ namespace Game.Objects
             foreach (var component in attached)
             {
                 var type = component.GetType();
-<<<<<<< Updated upstream
-                _components[type] = component;
-=======
                 components[type] = component;
->>>>>>> Stashed changes
             }
         }
 
