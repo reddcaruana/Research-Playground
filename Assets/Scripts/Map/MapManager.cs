@@ -31,7 +31,7 @@ namespace Game.Map
         private void OnDisable()
         {
             // Marker
-            Messenger.Current.Unsubscribe<MarkerQueries.Place>(PlaceMarker);
+            Messenger.Current.Unsubscribe<MarkerQueries.Update>(UpdateMarker);
             
             // Contents
             Messenger.Current.Unsubscribe<MapQueries.AddContents<BaseObject>>(AddContents);
@@ -41,7 +41,7 @@ namespace Game.Map
         private void OnEnable()
         {
             // Marker
-            Messenger.Current.Subscribe<MarkerQueries.Place>(PlaceMarker);
+            Messenger.Current.Subscribe<MarkerQueries.Update>(UpdateMarker);
             
             // Contents
             Messenger.Current.Subscribe<MapQueries.AddContents<BaseObject>>(AddContents);
@@ -114,7 +114,7 @@ namespace Game.Map
         /// Places the map marker over a cell.
         /// </summary>
         /// <param name="message">The message.</param>
-        private void PlaceMarker(MarkerQueries.Place message)
+        private void UpdateMarker(MarkerQueries.Update message)
         {
             // Find the cell position
             var cell = MainGrid.WorldToCell(message.GetPoint());

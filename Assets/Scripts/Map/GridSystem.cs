@@ -9,6 +9,9 @@ namespace Game.Map
     [RequireComponent(typeof(Grid))]
     public class GridSystem : MonoBehaviour
     {
+        [Header("References")]
+        [SerializeField] private Transform marker;
+        
         // The contents of this grid
         // NOTE: If a BaseObject is stackable, the child information will be
         //       stored inside an attached component
@@ -35,6 +38,9 @@ namespace Game.Map
             Messenger.Current.Unsubscribe<GridQueries.UnregisterContents>(UnregisterContents);
             
             Messenger.Current.Unsubscribe<GridQueries.GetCellContentsQuery, GridQueries.GetCellContentsResult>(GetCellContents);
+            
+            // Marker Queries
+            Messenger.Current.Unsubscribe<MarkerQueries.Update>(UpdateMarker);
         }
         
         // Event Coupling
@@ -45,6 +51,9 @@ namespace Game.Map
             Messenger.Current.Subscribe<GridQueries.UnregisterContents>(UnregisterContents);
             
             Messenger.Current.Subscribe<GridQueries.GetCellContentsQuery, GridQueries.GetCellContentsResult>(GetCellContents);
+                        
+            // Marker Queries
+            Messenger.Current.Subscribe<MarkerQueries.Update>(UpdateMarker);
         }
 
 #endregion
@@ -86,6 +95,18 @@ namespace Game.Map
 
 #region Messages
 
+        /// <summary>
+        /// Updates the marker position.
+        /// </summary>
+        /// <param name="message">The update message parameters.</param>
+        private void UpdateMarker(MarkerQueries.Update message)
+        {
+            var cell = MainGrid.WorldToCell(message.GetPoint());
+            var position = MainGrid.GetCellCenterWorld(cell);
+
+            marker.position = position;
+        }
+        
         /// <summary>
         /// Registers contents to a cell.
         /// </summary>

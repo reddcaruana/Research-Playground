@@ -16,7 +16,7 @@ namespace Game.Map
                 return;
             }
 
-            Messenger.Current.Publish(new MarkerQueries.Place
+            Messenger.Current.Publish(new MarkerQueries.Update
             {
                 Source = transform.position,
                 Direction = transform.forward,

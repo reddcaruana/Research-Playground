@@ -4,7 +4,9 @@ namespace Game.Queries
 {
     public static class MarkerQueries
     {
-        public struct Place : IMessage, ISource, IDirection
+#region Messages
+
+        public struct Update : ICellQuery
         {
             /// <inheritdoc />
             public Vector3 Source { get; set; }
@@ -15,10 +17,13 @@ namespace Game.Queries
             /// <inheritdoc />
             public Vector3 Direction { get; set; }
 
+            /// <inheritdoc />
             public Vector3 GetPoint()
             {
                 return Source + Direction * Distance;
             }
         }
+
+#endregion
     }
 }
