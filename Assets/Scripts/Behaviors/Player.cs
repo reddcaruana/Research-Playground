@@ -1,5 +1,6 @@
 using Game.Components;
 using Game.Input;
+using Game.Interfaces;
 using Game.Map;
 using Game.Objects;
 using Game.Queries;
@@ -18,26 +19,26 @@ namespace Game.Behaviors
         [SerializeField] private Transform hand;
         
         // The attached components
-        private Rigidbody _rigidbody;
-        private MarkerUpdater _updater;
+        private new Rigidbody rigidbody;
+        private MarkerUpdater updater;
         
         // Utility classes
-        private Movement _movement;
-        private Interaction _interaction;
+        private Movement movement;
+        private Interaction interaction;
 
 #region Unity Events
 
         // Component caching
         private void Awake()
         {
-            _rigidbody = GetComponent<Rigidbody>();
-            _updater = GetComponentInChildren<MarkerUpdater>();
+            rigidbody = GetComponent<Rigidbody>();
+            updater = GetComponentInChildren<MarkerUpdater>();
         }
 
         // Physics update
         private void FixedUpdate()
         {
-            _movement.Move(_rigidbody);
+            movement.Move(rigidbody);
         }
 
         // Subscription handling
@@ -60,8 +61,8 @@ namespace Game.Behaviors
         // Setup
         private void Start()
         {
-            _movement = new Movement(linearSpeed, angularSpeed);
-            _interaction = new Interaction(hand);
+            movement = new Movement(linearSpeed, angularSpeed);
+            interaction = new Interaction(hand);
         }
 
 #endregion
@@ -79,7 +80,7 @@ namespace Game.Behaviors
                 new GridQueries.GetCellContentsQuery
                 {
                     Source = transform.position,
-                    Distance = _updater.Distance,
+                    Distance = updater.Distance,
                     Direction = transform.forward
                 });
 
@@ -89,7 +90,7 @@ namespace Game.Behaviors
                 return;
             }
             
-            // If the object should take damage, apply it.
+            // If the object should take damage, apply it
             if (baseObject.TryGet<Destructible>(out var destructible))
             {
                 destructible.Damage(1);
@@ -102,7 +103,41 @@ namespace Game.Behaviors
         /// <param name="message">The interaction message data.</param>
         private void OnInteract(PlayerControls.Interact message)
         {
-
+            // Get the cell contents
+            var result = Messenger.Current.Query<GridQueries.GetCellContentsQuery, GridQueries.GetCellContentsResult>(
+                new GridQueries.GetCellContentsQuery
+                {
+                    Source = transform.position,
+                    Distance = updater.Distance,
+                    Direction = transform.forward
+                });
+            
+            // There is no object
+            if (result.Contents is not BaseObject baseObject)
+            {
+                return;
+            }
+            
+            // Prioritize object actions
+            // Carryable
+            if (result.Contents.TryGet<Carryable>(out var carryable))
+            {
+                Debug.Log("This is a carryable object.");
+                return;
+            }
+            
+            // Wieldable
+            if (result.Contents.TryGet<Wieldable>(out var wieldable))
+            {
+                Debug.Log("This is a wieldable object.");
+                return;
+            }
+            
+            // Interactables
+            if (result.Contents.TryGet<IInteractable>(out var interactable))
+            {
+                interactable.Interact();
+            }
         }
 
         /// <summary>
@@ -111,7 +146,7 @@ namespace Game.Behaviors
         /// <param name="message">The move message data.</param>
         private void OnMove(PlayerControls.Move message)
         {
-            _movement.Direction = message.Direction;
+            movement.Direction = message.Direction;
         }
 
 #endregion

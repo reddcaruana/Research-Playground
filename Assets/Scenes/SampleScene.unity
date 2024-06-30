@@ -1048,8 +1048,8 @@ GameObject:
   m_Component:
   - component: {fileID: 630759963}
   - component: {fileID: 630759966}
-  - component: {fileID: 630759964}
   - component: {fileID: 630759965}
+  - component: {fileID: 630759967}
   m_Layer: 0
   m_Name: Torch
   m_TagString: Untagged
@@ -1074,18 +1074,6 @@ Transform:
   - {fileID: 1514966427}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &630759964
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 630759962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4eafbf45df8746c3a4ba0db16cb4eed7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!65 &630759965
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1119,6 +1107,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46220f19c1cf42899472bf47dfab7f76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &630759967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 630759962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 178e8d0d0ecf4a62820a74e44a6e0415, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &658222174
 GameObject:
   m_ObjectHideFlags: 0
@@ -1144,7 +1144,7 @@ Transform:
   m_GameObject: {fileID: 658222174}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.5, y: 0, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1238,8 +1238,8 @@ MonoBehaviour:
   m_UVBias: {x: 0, y: 0}
   m_DecalLayerMask: 128
   m_ScaleMode: 0
-  m_Offset: {x: 0, y: 0, z: 1}
-  m_Size: {x: 1, y: 1, z: 2}
+  m_Offset: {x: 0, y: 0, z: 1.5}
+  m_Size: {x: 1, y: 1, z: 3}
   m_FadeFactor: 1
 --- !u!4 &855664989
 Transform:
@@ -1250,7 +1250,7 @@ Transform:
   m_GameObject: {fileID: 855664987}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1778,10 +1778,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1805999687}
   - component: {fileID: 1805999690}
-  - component: {fileID: 1805999688}
   - component: {fileID: 1805999689}
   - component: {fileID: 1805999692}
   - component: {fileID: 1805999691}
+  - component: {fileID: 1805999693}
   m_Layer: 0
   m_Name: Crate
   m_TagString: Untagged
@@ -1805,18 +1805,6 @@ Transform:
   - {fileID: 212018317}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1805999688
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1805999686}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4eafbf45df8746c3a4ba0db16cb4eed7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!65 &1805999689
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1878,6 +1866,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxDurability: 30
   burnThreshold: 0.1
+--- !u!114 &1805999693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1805999686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16166214255d4d5983e36dfd5af303e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1840553771
 GameObject:
   m_ObjectHideFlags: 0

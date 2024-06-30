@@ -1,42 +1,57 @@
 using Game.Components;
+using Game.Interfaces;
 using UnityEngine;
 
 namespace Game.Objects
 {
     public class Lever : BaseObject
     {
+        // Possible components
+        private Triggerable triggerable;
+
 #region Unity Events
 
-        // // Unregister all actions
-        // private void OnDisable()
-        // {
-        //     // Trigger
-        //     var trigger = Get<Trigger>();
-        //     if (trigger)
-        //     {
-        //         trigger.OnChange -= TriggerHandler;
-        //     }
-        // }
-        //
-        // // Register all actions
-        // private void OnEnable()
-        // {
-        //     // Trigger
-        //     var trigger = Get<Trigger>();
-        //     if (trigger)
-        //     {
-        //         trigger.OnChange += TriggerHandler;
-        //     }
-        // }
+        /// <inheritdoc />
+        protected override void Awake()
+        {
+            base.Awake();
+
+            // Get the possible components
+            triggerable = Get<Triggerable>();
+        }
+
+        // Unregister all actions
+        private void OnDisable()
+        {
+            // Trigger
+            if (triggerable)
+            {
+                triggerable.OnChange -= OnTriggerableStateChanged;
+            }
+        }
+
+        // Register all actions
+        private void OnEnable()
+        {
+            // Trigger
+            if (triggerable)
+            {
+                triggerable.OnChange += OnTriggerableStateChanged;
+            }
+        }
 
 #endregion
 
-#region Action Handling
+#region Event Handlers
 
-        // private void TriggerHandler(bool value)
-        // {
-        //     Debug.Log($"Lever value is {value}");
-        // }
+        /// <summary>
+        /// Handles the change in trigger state.
+        /// </summary>
+        /// <param name="state">The state value.</param>
+        private void OnTriggerableStateChanged(bool state)
+        {
+            Debug.Log("Lever state changed!");
+        }
 
 #endregion
     }

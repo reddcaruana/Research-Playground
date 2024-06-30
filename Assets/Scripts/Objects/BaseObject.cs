@@ -69,6 +69,22 @@ namespace Game.Objects
             foreach (var component in attached)
             {
                 var type = component.GetType();
+                
+                // Filter interactables
+                if (component is IInteractable)
+                {
+                    // There is already an interactables
+                    if (components.ContainsKey(typeof(IInteractable)))
+                    {
+                        Debug.LogError($"{name} found second interactable ({type.Name}) which will be ignored!");
+                        continue;
+                    }
+                    
+                    // Add the interactable
+                    components[typeof(IInteractable)] = component;
+                }
+                
+                // Add the component under its same type
                 components[type] = component;
             }
         }
