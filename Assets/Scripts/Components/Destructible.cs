@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Components
 {
-    public class Destructible : MonoBehaviour, IDestructible
+    public class Destructible : BaseComponent, IDestructible
     {
         /// <inheritdoc />
         [field: SerializeField] public int Integrity { get; private set; }

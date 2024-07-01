@@ -1,10 +1,9 @@
 using System;
 using Game.Interfaces;
-using UnityEngine;
 
 namespace Game.Components
 {
-    public abstract class Pickable : MonoBehaviour, IPickable
+    public abstract class Pickable : BaseComponent, IPickable
     {
         /// <summary>
         /// Handles the pickup action.

@@ -1,118 +1,90 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 namespace Game.Components
 {
-    public class Burnable : MonoBehaviour
+    public class Burnable : MaterialUpdater
     {
-        private static readonly int BurnValueProperty = Shader.PropertyToID("_Burn_Value");
+        // The shader property ID
+        private static readonly int BurnValuePropertyID = Shader.PropertyToID("_Burn_Value");
         
-        [SerializeField] private float maxDurability = 100f;
+        // The integrity values
+        [SerializeField] private float maxIntegrity = 50f;
         [SerializeField] private float burnThreshold = 0.1f;
-
-        /// <summary>
-        /// The current health value.
-        /// </summary>
-        public float Durability { get; private set; }
         
         /// <summary>
-        /// The burning state.
+        /// The current integrity value.
+        /// </summary>
+        public float Integrity { get; private set; }
+        
+        /// <summary>
+        /// Confirms if the object is currently burning.
         /// </summary>
         public bool IsBurning { get; private set; }
+
+        /// <summary>
+        /// Fires when the object has burned.
+        /// </summary>
+        public event Action OnBurned;
         
-        // Coroutine references
-        private Coroutine _activeCoroutine;
-        
-        // Materials
-        private Material[] _materials;
-        private BoxCollider _fireCollider;
-        private FireSource _fireSource;
+        // Coroutines
+        private Coroutine activeCoroutine;
 
 #region Unity Events
-
-        // Component caching
-        private void Awake()
-        {
-            var renderers = GetComponentsInChildren<Renderer>();
-            
-            _materials = new Material[renderers.Length];
-            for (var i = 0; i < renderers.Length; i++)
-            {
-                _materials[i] = renderers[i].material;
-            }
-        }
 
         // Variable setup
         private void Start()
         {
-            Durability = maxDurability;
+            Integrity = maxIntegrity;
         }
 
 #endregion
-
+        
 #region Methods
 
-        /// <summary>
-        /// Starts the burning process.
-        /// </summary>
         public void Burn()
         {
-            // We're already burning
+            // Already burning
             if (IsBurning)
             {
                 return;
             }
-
+            
             // Stop any active coroutines
-            if (_activeCoroutine != null)
+            if (activeCoroutine != null)
             {
-                StopCoroutine(_activeCoroutine);
+                StopCoroutine(activeCoroutine);
             }
 
-            _activeCoroutine = StartCoroutine(BurnCoroutine());
+            activeCoroutine = StartCoroutine(BurnCoroutine());
         }
-
-        /// <summary>
-        /// Adds the fire source components.
-        /// </summary>
-        private void CreateFireSource()
+        
+        /// <inheritdoc />
+        protected override void UpdateMaterials()
         {
-            // Add the script
-            _fireSource = gameObject.AddComponent<FireSource>();
+            // Normalized integrity
+            var integrityT = Integrity / maxIntegrity;
+            var burnT = 0f;
 
-            // Create the collider
-            var activeCollider = GetComponent<BoxCollider>();
-            _fireCollider = gameObject.AddComponent<BoxCollider>();
-            _fireCollider.isTrigger = true;
-            _fireCollider.center = activeCollider.center;
-            _fireCollider.size = activeCollider.size * 2f;
-        }
-
-        /// <summary>
-        /// Removes the fire source components.
-        /// </summary>
-        private void RemoveFireSource()
-        {
-            Destroy(_fireSource);
-            Destroy(_fireCollider);
-        }
-
-        /// <summary>
-        /// Updates the material values.
-        /// </summary>
-        private void UpdateMaterials()
-        {
-            var durabilityT = Durability / maxDurability;
-            var t = 0f;
-            
-            if (durabilityT <= burnThreshold)
+            // Set the burn value
+            if (integrityT <= burnThreshold)
             {
-                t = 1 - durabilityT / burnThreshold;
+                burnT = 1f - integrityT / burnThreshold;
             }
-            
-            for (var i = 0; i < _materials.Length; i++)
+
+            for (var i = 0; i < Materials.Length; i++)
             {
-                _materials[i].SetFloat(BurnValueProperty, t);
+                var material = Materials[i];
+                
+                // The float property doesn't exist[
+                if (!material.HasFloat(BurnValuePropertyID))
+                {
+                    continue;
+                }
+                
+                // Update the material
+                material.SetFloat(BurnValuePropertyID, burnT);
             }
         }
 
@@ -120,31 +92,38 @@ namespace Game.Components
 
 #region Coroutines
 
-        /// <summary>
-        /// The burning coroutine.
-        /// </summary>
         private IEnumerator BurnCoroutine()
         {
+            // Start burning
             IsBurning = true;
-            CreateFireSource();
-            
+
             while (IsBurning)
             {
-                Durability -= Time.deltaTime;
+                // Lower the integrity
+                Integrity -= Time.deltaTime;
                 UpdateMaterials();
                 
-                if (Durability <= 0)
+                if (Integrity <= 0)
                 {
-                    RemoveFireSource();
-                    yield break;
+                    Integrity = 0;
+                    IsBurning = false;
                 }
-
+                
                 yield return null;
             }
             
-            RemoveFireSource();
+            // Invoke the burned event
+            OnBurned?.Invoke();
+            
+            // Destroy the affecting components
+            if (Owner.TryGet<FireSource>(out var fireSource))
+            {
+                Destroy(fireSource);
+            }
+            Destroy(this);
         }
 
 #endregion
+        
     }
 }

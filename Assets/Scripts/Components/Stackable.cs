@@ -1,10 +1,9 @@
 using System;
 using Game.Interfaces;
-using UnityEngine;
 
 namespace Game.Components
 {
-    public class Stackable : MonoBehaviour, IComponent
+    public class Stackable : BaseComponent, IComponent
     {
         /// <summary>
         /// The object that was stacked onto this one.

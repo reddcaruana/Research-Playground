@@ -42,6 +42,45 @@ namespace Game.Objects
 
 #region Methods
         
+        /// <inheritdoc />
+        public void Add<T>(T component) where T : IComponent
+        {
+            var type = component.GetType();
+                
+            // Check for specific categories
+            Check<IInteractable>(component);
+            Check<IPickable>(component);
+                
+            // Add the component under its same type
+            components[type] = component;
+            component.SetOwner(this);
+        }
+        
+        /// <summary>
+        /// Checks the component for a specific type, and duplicates it under a different key.
+        /// </summary>
+        /// <param name="component">The component instance.</param>
+        /// <typeparam name="TComponent">The component type.</typeparam>
+        private void Check<TComponent>(IComponent component)
+            where TComponent : IComponent
+        {
+            // Get the component type for error purposes
+            var type = typeof(TComponent);
+            var printType = component.GetType();
+
+            // Stop here if not the same component
+            if (component is not TComponent)
+            {
+                return;
+            }
+            
+            // There is already a key for this
+            if (!components.TryAdd(type, component))
+            {
+                Debug.LogError($"Second instance of {type.Name} in {name}. Type: {printType}");
+            }
+        }
+
         /// <summary>
         /// Returns a component of a specified type.
         /// </summary>
@@ -64,28 +103,11 @@ namespace Game.Objects
         /// </summary>
         private void RegisterComponents()
         {
-            var attached = GetComponents<IComponent>();
+            var attached = GetComponentsInChildren<IComponent>();
 
             foreach (var component in attached)
             {
-                var type = component.GetType();
-                
-                // Filter interactables
-                if (component is IInteractable)
-                {
-                    // There is already an interactables
-                    if (components.ContainsKey(typeof(IInteractable)))
-                    {
-                        Debug.LogError($"{name} found second interactable ({type.Name}) which will be ignored!");
-                        continue;
-                    }
-                    
-                    // Add the interactable
-                    components[typeof(IInteractable)] = component;
-                }
-                
-                // Add the component under its same type
-                components[type] = component;
+                Add(component);
             }
         }
 

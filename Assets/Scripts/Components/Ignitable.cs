@@ -1,99 +1,49 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using Game.Interfaces;
 using UnityEngine;
 
 namespace Game.Components
 {
-    [RequireComponent(typeof(Burnable))]
-    public class Ignitable : MonoBehaviour
+    public class Ignitable : MaterialUpdater, IIgnitable
     {
-        private static readonly int IgniteValueProperty = Shader.PropertyToID("_Ignite_Value");
-        
+        // The shader property ID
+        private static readonly int IgniteValuePropertyID = Shader.PropertyToID("_Ignite_Value");
+
+        // The durability values
         [SerializeField] private float maxDurability = 10f;
         [SerializeField] private float replenishRate = 1f;
 
         // The registered fire sources
-        private readonly HashSet<FireSource> _fireSources = new();
-        
+        private readonly HashSet<IFireSource> fireSources = new();
+
         /// <summary>
         /// The current durability value.
         /// </summary>
         public float Durability { get; private set; }
 
         /// <summary>
-        /// Determines if this object is burning.
+        /// Determines if the object is in range of fire and igniting.
         /// </summary>
-        public bool IsIgniting { get; private set; }
+        public bool InRangeOfFire => fireSources.Count > 0;
+
+        // Determines if the object is burning
+        private bool isBurning;
         
-        // Components
-        private Burnable _burnable;
-        
-        // Materials
-        private Material[] _materials;
-        
-        // Coroutine references
-        private Coroutine _activeCoroutine;
+        // The active coroutine
+        private Coroutine activeCoroutine;
 
 #region Unity Events
 
-        // Component caching
-        private void Awake()
-        {
-            _burnable = GetComponent<Burnable>();
-
-            var renderers = GetComponentsInChildren<Renderer>();
-            
-            _materials = new Material[renderers.Length];
-            for (var i = 0; i < renderers.Length; i++)
-            {
-                _materials[i] = renderers[i].material;
-            }
-        }
-        
         // Variable setup
         private void Start()
         {
             Durability = maxDurability;
-        }
-
-        // Adds the fire source contact
-        private void OnTriggerEnter(Collider other)
-        {
-            // There is no fire source
-            if (!other.TryGetComponent<FireSource>(out var fireSource))
+            
+            // Check for fire sources
+            if (Owner.TryGet<FireSource>(out _))
             {
-                return;
-            }
-
-            // This fire source is registered
-            if (!_fireSources.Add(fireSource))
-            {
-                return;
-            }
-
-            Ignite();
-        }
-
-        // Removes the fire source contact
-        private void OnTriggerExit(Collider other)
-        {
-            Debug.Log("Lost object");
-            // There is no fire source
-            if (!other.TryGetComponent<FireSource>(out var fireSource))
-            {
-                return;
-            }
-
-            // This fire source is registered
-            if (!_fireSources.Remove(fireSource))
-            {
-                return;
-            }
-
-            if (!_fireSources.Any())
-            {
-                Extinguish();
+                Debug.LogError("Ignitable objects cannot also be a fire source!");
             }
         }
 
@@ -101,79 +51,111 @@ namespace Game.Components
 
 #region Methods
 
-        /// <summary>
-        /// Starts the ignition process.
-        /// </summary>
-        private void Ignite()
+        /// <inheritdoc />
+        public void OnContact(IFireSource fireSource)
         {
-            // We're already igniting
-            if (IsIgniting)
+            // The fire source already exists
+            if (!fireSources.Add(fireSource))
             {
                 return;
             }
 
-            // Clear the active coroutine
-            if (_activeCoroutine != null)
-            {
-                StopCoroutine(_activeCoroutine);
-            }
-
-            _activeCoroutine = StartCoroutine(IgniteCoroutine());
-        }
-
-        /// <summary>
-        /// Starts the replenishing process.
-        /// </summary>
-        private void Extinguish()
-        {
-            // We're not igniting
-            if (!IsIgniting || _burnable.IsBurning)
+            // The object is already burning
+            if (isBurning)
             {
                 return;
             }
             
-            // Clear the active coroutine
-            if (_activeCoroutine != null)
+            // Stop the active coroutine
+            if (activeCoroutine != null)
             {
-                StopCoroutine(_activeCoroutine);
+                StopCoroutine(activeCoroutine);
             }
 
-            _activeCoroutine = StartCoroutine(ReplenishCoroutine());
+            // Start the burning routine
+            activeCoroutine = StartCoroutine(BurnCoroutine());
         }
 
-        /// <summary>
-        /// Updates the material values.
-        /// </summary>
-        private void UpdateMaterials()
+        /// <inheritdoc />
+        public void OnSeparate(IFireSource fireSource)
         {
-            var t = 1 - (Durability / maxDurability);
-            for (var i = 0; i < _materials.Length; i++)
+            // The fire source is not recorded
+            if (!fireSources.Contains(fireSource))
             {
-                _materials[i].SetFloat(IgniteValueProperty, t);
+                return;
+            }
+
+            // Remove the fire source
+            fireSources.Remove(fireSource);
+
+            // There is more than one fire source still
+            if (fireSources.Count > 0)
+            {
+                return;
+            }
+
+            // The object is not burning
+            if (!isBurning)
+            {
+                return;
+            }
+
+            // Stop the active coroutine
+            if (activeCoroutine != null)
+            {
+                StopCoroutine(activeCoroutine);
+            }
+
+            // Start the replenish routine
+            activeCoroutine = StartCoroutine(ReplenishRoutine());
+        }
+
+        /// <inheritdoc />
+        protected override void UpdateMaterials()
+        {
+            var t = Mathf.Clamp01(1 - Durability / maxDurability);
+            for (var i = 0; i < Materials.Length; i++)
+            {
+                var material = Materials[i];
+
+                // The float property doesn't exist
+                if (!material.HasFloat(IgniteValuePropertyID))
+                {
+                    continue;
+                }
+
+                // Update the material
+                material.SetFloat(IgniteValuePropertyID, t);
             }
         }
 
-        
 #endregion
 
 #region Coroutines
 
         /// <summary>
-        /// The ignition process.
+        /// The coroutine handling ignition.
         /// </summary>
-        private IEnumerator IgniteCoroutine()
+        private IEnumerator BurnCoroutine()
         {
-            IsIgniting = true;
+            isBurning = true;
             
-            while (IsIgniting)
+            while (isBurning)
             {
                 Durability -= Time.deltaTime;
                 UpdateMaterials();
                 
                 if (Durability <= 0)
                 {
-                    _burnable.Burn();
-                    yield break;
+                    // No longer burning
+                    isBurning = false;
+                    
+                    // Add a fire source
+                    var fireSource = gameObject.AddComponent<FireSource>();
+                    Owner.Add(fireSource);
+                    
+                    // Destroy this component
+                    Destroy(this);
                 }
 
                 yield return null;
@@ -181,17 +163,17 @@ namespace Game.Components
         }
 
         /// <summary>
-        /// The replenishment process.
+        /// The coroutine handling replenishment.
         /// </summary>
-        private IEnumerator ReplenishCoroutine()
+        private IEnumerator ReplenishRoutine()
         {
-            IsIgniting = false;
+            isBurning = false;
             
-            while (!IsIgniting)
+            while (Durability < maxDurability)
             {
-                Durability += replenishRate * Time.deltaTime;
+                Durability += Time.deltaTime * replenishRate;
                 UpdateMaterials();
-                
+
                 if (Durability >= maxDurability)
                 {
                     Durability = maxDurability;
@@ -203,5 +185,6 @@ namespace Game.Components
         }
 
 #endregion
+
     }
 }

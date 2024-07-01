@@ -1,10 +1,9 @@
 using System;
 using Game.Interfaces;
-using UnityEngine;
 
 namespace Game.Components
 {
-    public class Triggerable : MonoBehaviour, IInteractable
+    public class Triggerable : BaseComponent, IInteractable
     {
         /// <summary>
         /// The state of this switch.

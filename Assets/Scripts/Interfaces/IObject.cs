@@ -3,6 +3,12 @@ namespace Game.Interfaces
     public interface IObject
     {
         /// <summary>
+        /// Adds a component.
+        /// </summary>
+        /// <param name="component">The component instance.</param>
+        void Add<T>(T component) where T : IComponent;
+        
+        /// <summary>
         /// Returns a component of the specified type.
         /// </summary>
         T Get<T>() where T : IComponent;
