@@ -99,6 +99,12 @@ namespace Game.Components
             {
                 return;
             }
+            
+            // The component is being destroyed
+            if (IsBeingDestroyed)
+            {
+                return;
+            }
 
             // Stop the active coroutine
             if (activeCoroutine != null)

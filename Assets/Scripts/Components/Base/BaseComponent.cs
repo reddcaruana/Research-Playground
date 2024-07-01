@@ -5,9 +5,26 @@ namespace Game.Components
 {
     public abstract class BaseComponent : MonoBehaviour, IComponent
     {
+        /// <summary>
+        /// True if the component is being destroyed.
+        /// </summary>
+        protected bool IsBeingDestroyed { get; private set; }
+        
         /// <inheritdoc />
         public IObject Owner { get; private set; }
 
+#region Unity Events
+
+        // Prepares the object for destruction
+        protected virtual void OnDestroy()
+        {
+            IsBeingDestroyed = true;
+        }
+
+#endregion
+        
+#region Methods
+        
         /// <inheritdoc />
         public void SetOwner(IObject owner)
         {
@@ -20,5 +37,7 @@ namespace Game.Components
             
             Owner = owner;
         }
+
+#endregion
     }
 }

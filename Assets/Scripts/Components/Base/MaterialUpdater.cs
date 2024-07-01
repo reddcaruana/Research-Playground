@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Components
 {
-    public abstract class MaterialUpdater : BaseComponent, IComponent
+    public abstract class MaterialUpdater : BaseComponent
     {
         /// <summary>
         /// The material instances assigned to this object. 

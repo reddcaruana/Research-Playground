@@ -48,8 +48,10 @@ namespace Game.Components
         }
 
         // Clean up the values
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
+            base.OnDestroy();
+            
             // Destroy the trigger collider
             if (triggerCollider)
             {
@@ -59,7 +61,7 @@ namespace Game.Components
             // Tell any linked ignitables to stop burning
             foreach (var ignitable in contacts)
             {
-                ignitable.OnSeparate(this);
+                ignitable?.OnSeparate(this);
             }
         }
 
